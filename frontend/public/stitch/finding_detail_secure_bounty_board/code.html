@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Finding Detail - Secure Bounty Board</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#0e1d29",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#545e76",
+                        "secondary": "#47607e",
+                        "on-secondary-container": "#48617e",
+                        "surface-container-highest": "#d5e4f6",
+                        "secondary-fixed": "#d1e4ff",
+                        "primary-fixed-dim": "#bbc6e2",
+                        "on-primary-fixed": "#101b30",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "secondary-container": "#c2dcff",
+                        "primary": "#051125",
+                        "on-primary-container": "#828da7",
+                        "inverse-surface": "#23323f",
+                        "tertiary-container": "#002b30",
+                        "error-container": "#ffdad6",
+                        "surface": "#f7f9ff",
+                        "surface-variant": "#d5e4f6",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3c475d",
+                        "on-surface-variant": "#45474d",
+                        "tertiary-fixed-dim": "#82d3de",
+                        "outline": "#75777d",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#bbc6e2",
+                        "surface-dim": "#ccdced",
+                        "primary-fixed": "#d7e2ff",
+                        "tertiary-fixed": "#9ff0fb",
+                        "surface-container-high": "#daeafc",
+                        "on-tertiary-container": "#4699a3",
+                        "on-tertiary-fixed": "#001f23",
+                        "outline-variant": "#c5c6cd",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "surface-container": "#e2efff",
+                        "on-background": "#0e1d29",
+                        "background": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f56",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "primary-container": "#1b263b",
+                        "tertiary": "#001417",
+                        "surface-container-low": "#ecf4ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+        .code-block {
+            background: #051125;
+            color: #d1e4ff;
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen p-4 gap-2 bg-slate-100 dark:bg-slate-950 w-64 shrink-0">
+<div class="mb-8 px-2">
+<h1 class="font-black text-slate-900 dark:text-white uppercase tracking-widest text-lg">The Sovereign Ledger</h1>
+<p class="text-xs text-slate-500 font-medium">Enterprise Tier</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-sm font-medium">Findings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">playlist_add_check</span>
+<span class="text-sm font-medium">Triage</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="text-sm font-medium">Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4">
+<button class="w-full bg-primary text-on-primary py-3 rounded-md font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                Report Vulnerability
+            </button>
+</div>
+</aside>
+<div class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-6 h-16 bg-slate-50 dark:bg-slate-900 shrink-0">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Secure Bounty Board</span>
+<div class="h-6 w-[1px] bg-outline-variant/30"></div>
+<div class="text-sm text-on-surface-variant font-medium">Finding #SB-9021</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">corporate_fare</span>
+                    Organization Alpha
+                </div>
+<div class="flex gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:bg-slate-200/50 p-2 rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-slate-500 hover:bg-slate-200/50 p-2 rounded-full transition-colors">apps</button>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden">
+<img alt="Security Analyst Profile" data-alt="professional portrait of a security analyst in a clean office setting, high key lighting, serious and focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlW7YIkvutk-M1EbU31tt6EeZGpb5kwbjYOwPaanDIuCVYBJcJGjPu58hALduGHZGApMYES9wVRUXo7nOPdIHtUIH5SRm3uZowpqI45Teyw1tfxsKdRYN3eGUTOCkAcSP2vQiAlDgR1_tQh5XUElE-WMXqQ3lQlWNUask4C4x1xI5dScJtP52AKpILdq-ZjqUCIEAgTsOCZ-HCWqoKsqdKQA0MU1yZ9dnDVswOBi0--HKVGPbmSs4aWTGpcK9uscYGct9jTj6YYxc"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto bg-surface p-8">
+<div class="max-w-[1600px] mx-auto">
+<!-- Finding Header -->
+<div class="mb-10 flex justify-between items-end">
+<div class="max-w-2xl">
+<div class="flex items-center gap-3 mb-3">
+<span class="px-3 py-1 bg-tertiary-container text-tertiary-fixed text-[10px] font-bold uppercase tracking-widest rounded-sm">Active</span>
+<span class="px-3 py-1 bg-error-container text-on-error-container text-[10px] font-bold uppercase tracking-widest rounded-sm">Critical</span>
+</div>
+<h2 class="text-4xl font-extrabold tracking-tight text-primary leading-tight">Broken Access Control in Financial Reporting API</h2>
+<p class="mt-4 text-on-surface-variant leading-relaxed">Reported by <span class="text-primary font-semibold">Specter_Dev</span> • 14 hours ago</p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 bg-surface-container-highest text-primary font-bold text-sm rounded-md transition-all hover:bg-slate-200">Assign Triage</button>
+<button class="px-5 py-2.5 bg-primary text-on-primary font-bold text-sm rounded-md transition-all">Accept Finding</button>
+</div>
+</div>
+<!-- Asymmetric Bento Grid Layout -->
+<div class="grid grid-cols-10 gap-6">
+<!-- Left Section: Finding Details (60%) -->
+<div class="col-span-10 lg:col-span-6 space-y-6">
+<!-- Description Card -->
+<section class="bg-surface-container-lowest p-8 rounded-lg shadow-sm">
+<h3 class="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">description</span>
+                                Vulnerability Analysis
+                            </h3>
+<div class="prose prose-slate max-w-none text-on-surface-variant leading-relaxed space-y-4">
+<p>An IDOR (Insecure Direct Object Reference) vulnerability was discovered in the endpoint <code>/api/v1/reports/export</code>. An authenticated user can manipulate the <code>report_id</code> parameter to download proprietary financial statements of other organizations without proper authorization.</p>
+<p>The backend fails to validate if the requested <code>report_id</code> belongs to the <code>org_id</code> associated with the requester's JWT token session. This allows for total horizontal privilege escalation across the ledger system.</p>
+</div>
+</section>
+<!-- Proof of Concept Section -->
+<section class="bg-surface-container-lowest p-8 rounded-lg shadow-sm">
+<h3 class="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">terminal</span>
+                                Evidence &amp; Reproduction
+                            </h3>
+<div class="space-y-4">
+<div class="rounded-lg overflow-hidden">
+<div class="flex items-center justify-between px-4 py-2 bg-primary-container text-on-primary-container text-xs font-mono">
+<span>CURL REPRODUCTION</span>
+<span class="material-symbols-outlined text-sm cursor-pointer hover:text-white">content_copy</span>
+</div>
+<pre class="code-block p-4 text-sm overflow-x-auto"><code>curl -X GET "https://api.ledger-core.io/v1/reports/export?report_id=99021" \
+-H "Authorization: Bearer [ATTACKER_JWT]" \
+-H "Accept: application/json"</code></pre>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="group relative aspect-video rounded-md overflow-hidden bg-slate-200">
+<img class="object-cover w-full h-full opacity-90 group-hover:opacity-100 transition-opacity" data-alt="screenshot of a web inspector showing intercepted network traffic with unauthorized JSON data payload in the response" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4p796rg2dnfyQGJVjH7biqLxV2fa7LGAHRb5g_OdsYOqDXJMILE7XIYhS6Nn8MpKtWxfzls_yWy-7sL9tCXRDIpG4W-Bf_XArM9j-aS8UmQCEwv90bfypvEB0Tt91fPO9c30p5YVBxwzXm9E3WBp2hxKSFKvpolj_o3_8gx6G44mYvVnA6iMh5bZItMVLxwA6DFxZ7tc3H5B8LD9sQHXjmIJYE0x75pwQoQIRvgw_2Obj_6TgmL7fxJ5aofnGrED7cKDYGOu9qBo"/>
+<div class="absolute bottom-2 left-2 bg-black/60 px-2 py-1 text-[10px] text-white font-medium">Intercepted Response</div>
+</div>
+<div class="group relative aspect-video rounded-md overflow-hidden bg-slate-200">
+<img class="object-cover w-full h-full opacity-90 group-hover:opacity-100 transition-opacity" data-alt="close up of server logs on a dark screen showing unauthorized access attempts from different IP addresses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIZ9PZovwj5C1_PCDRzoOnR4Ov14H_o0eovzgkfo5qcAmeK4Ln6ms2hTqJ0N_G2a3uPQ1FWUsIN5HxbLpxUNFI149VJcCYGf9A5nJNar-8S_r_-Rf8ek64CFjYATKN1LXb2oom2iMrWd5xWb8O0pz1b3X0-ugMbr5clCGH8l4f56gzqqYTLdCUz8wKro7thXMQdQsEkXW0fCf383PLz8dBCcr0nzCNCXGoz2pOkUUDY0zTUf69XWvJEQMB-1EvZBRPIqeeW033h0s"/>
+<div class="absolute bottom-2 left-2 bg-black/60 px-2 py-1 text-[10px] text-white font-medium">Server Logs Access</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Comments Section -->
+<section class="bg-surface-container-low p-8 rounded-lg">
+<h3 class="text-xl font-bold text-primary mb-8 flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">forum</span>
+                                    Collaborative Thread
+                                </span>
+<span class="text-xs font-medium text-on-surface-variant">3 Comments</span>
+</h3>
+<div class="space-y-8">
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-300 shrink-0">
+<img class="rounded-full" data-alt="portrait of a male system administrator with glasses, neutral professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTmZhheA9ZIS3vh3IuJDGOmYIC2qJ_kI0h8mwqtnIF8Kog-gUPDQxlVdPdEnVDEiA4N4QtDnKOfM2uIKKSr9m5lrMc2SC-EwY3RpDmqb2fHPnBs4df0uKn7XhIDGpl66fOzFL28EXiWurl6GVAd08yF-SbVaw85v34Wb2n1Kz2_xUs-0E2ZTB5v3Fw1jiOgIWpV5IhpWp9MxhjGaATNdCvBGlNaTa9QluLp2LHAGDiwPXGworJZykeeEGYpsOPKV9f8Im5wLzQj40"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-sm font-bold text-primary">Marcus Thorne</span>
+<span class="text-[10px] text-on-surface-variant font-medium">2 HOURS AGO</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed bg-surface-container-lowest p-4 rounded-md">I've confirmed this locally. It looks like the AuthMiddleware is bypassed when the export flag is present in the query string. Escalating to engineering team immediately.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-300 shrink-0">
+<img class="rounded-full" data-alt="portrait of a female software engineer with a thoughtful expression, soft daylight from a window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHSRSbGtKX3KIKi5TYj1JyfVu_DCrZbcZwoSLecsJdZeequD330z6vVqtS4ffExDT-otQO2s1ChzS8tA0rUHB8Cb9QFqXupfQVqAaiMFA_pclj8YVZdECped8wcFTIEbTqfi8Rua7U952DFN9DfniFGb0gMfiNEya_AIAzQ84P9ZACKQxRZ9g9WEhAUTkamu73XC9B7Dd4yTqtbxfdp_ltNdtp4q6tyVNQYtuGhjpW-FcbEzrpD5bPs8jdB3y_DIoLxV3mmEyusyM"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-sm font-bold text-primary">Elena Rodriguez</span>
+<span class="text-[10px] text-on-surface-variant font-medium">1 HOUR AGO</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed bg-surface-container-lowest p-4 rounded-md">The fix should be implemented at the Controller level. We need a secondary ownership check against the organization_id in the JWT.</p>
+</div>
+</div>
+<div class="pt-4">
+<div class="relative">
+<textarea class="w-full bg-surface-container-lowest border-none rounded-md p-4 text-sm focus:ring-2 focus:ring-primary h-24 placeholder:text-slate-400" placeholder="Add to the investigation..."></textarea>
+<button class="absolute bottom-3 right-3 px-4 py-1.5 bg-primary text-on-primary text-xs font-bold rounded">Post</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Section: AI Analysis & Risk (40%) -->
+<div class="col-span-10 lg:col-span-4 space-y-6">
+<!-- AI Analysis Panel -->
+<section class="glass-panel p-8 rounded-lg border border-white/40 shadow-xl relative overflow-hidden">
+<!-- Subtle Background Glow -->
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-tertiary-fixed-dim/20 rounded-full blur-3xl"></div>
+<div class="relative">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container p-2 bg-tertiary-container rounded-md">psychology</span>
+<div>
+<h3 class="text-lg font-bold text-primary">Sovereign AI</h3>
+<p class="text-[10px] font-bold text-on-tertiary-container uppercase tracking-widest">Automated Insights</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-2xl font-black text-primary">98%</div>
+<div class="text-[10px] text-on-surface-variant font-bold uppercase">Confidence Score</div>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<h4 class="text-xs font-black text-primary uppercase tracking-wider mb-2">Executive Summary</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed">This vulnerability represents a high-probability impact on data privacy. AI predicts a 78% likelihood of active exploitation if not patched within 48 hours due to the simplicity of the reproduction vector.</p>
+</div>
+<div class="bg-surface-container-high/50 p-4 rounded-md">
+<h4 class="text-xs font-black text-primary uppercase tracking-wider mb-2">Technical Risk</h4>
+<div class="flex items-center gap-4 mb-3">
+<div class="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+<div class="h-full bg-error w-[92%]"></div>
+</div>
+<span class="text-xs font-bold text-error">9.2 Critical</span>
+</div>
+<p class="text-xs text-on-surface-variant italic">CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N</p>
+</div>
+<div>
+<h4 class="text-xs font-black text-primary uppercase tracking-wider mb-2">Suggested Remediation</h4>
+<ul class="space-y-3">
+<li class="flex gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-base">check_circle</span>
+                                                Implement Ownership Verification Middleware.
+                                            </li>
+<li class="flex gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-base">check_circle</span>
+                                                Rotate API keys for affected organizations.
+                                            </li>
+<li class="flex gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-base">check_circle</span>
+                                                Enable audit logging for all export endpoints.
+                                            </li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Discovery Timeline -->
+<section class="bg-surface-container-lowest p-8 rounded-lg shadow-sm">
+<h3 class="text-sm font-black text-primary uppercase tracking-widest mb-6">Discovery Path</h3>
+<div class="relative space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-white flex items-center justify-center border-2 border-slate-200">
+<span class="w-2 h-2 rounded-full bg-slate-300"></span>
+</div>
+<div class="text-xs font-bold text-primary">Initial Discovery</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Oct 24, 09:12 AM</div>
+<p class="text-xs text-on-surface-variant mt-1">Manual security review of financial modules.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-white flex items-center justify-center border-2 border-slate-200">
+<span class="w-2 h-2 rounded-full bg-slate-300"></span>
+</div>
+<div class="text-xs font-bold text-primary">PoC Developed</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Oct 24, 11:45 AM</div>
+<p class="text-xs text-on-surface-variant mt-1">Reproduction script validated by Specter_Dev.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] text-tertiary-fixed">flag</span>
+</div>
+<div class="text-xs font-bold text-primary">Report Submitted</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Oct 24, 02:00 PM</div>
+<p class="text-xs text-on-surface-variant mt-1">Official entry into Sovereign Ledger.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Audit Trail (Full Width Bottom) -->
+<section class="col-span-10 mt-6 bg-surface-container-low p-6 rounded-lg">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xs font-black text-primary uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">history</span>
+                                Permanent Audit Trail
+                            </h3>
+<button class="text-[10px] font-bold text-primary bg-white px-3 py-1 rounded shadow-sm hover:bg-slate-50">Export Log (CSV)</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="text-[10px] font-black text-on-surface-variant uppercase border-b border-slate-200">
+<tr>
+<th class="pb-3 pr-4">Actor</th>
+<th class="pb-3 pr-4">Action</th>
+<th class="pb-3 pr-4">Modified Object</th>
+<th class="pb-3 pr-4">Timestamp</th>
+<th class="pb-3">Status Change</th>
+</tr>
+</thead>
+<tbody class="text-xs font-medium text-on-surface-variant">
+<tr class="border-b border-slate-100/50">
+<td class="py-4 font-bold text-primary">System AI</td>
+<td class="py-4">Auto-Categorization</td>
+<td class="py-4 italic font-mono">severity_rating</td>
+<td class="py-4">Oct 24, 2023 - 14:02:11</td>
+<td class="py-4">
+<span class="flex items-center gap-2">
+<span class="text-slate-400">Low</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+<span class="text-error font-bold">Critical</span>
+</span>
+</td>
+</tr>
+<tr class="border-b border-slate-100/50">
+<td class="py-4 font-bold text-primary">Marcus Thorne</td>
+<td class="py-4">Triage Review</td>
+<td class="py-4 italic font-mono">finding_state</td>
+<td class="py-4">Oct 24, 2023 - 15:45:00</td>
+<td class="py-4">
+<span class="flex items-center gap-2">
+<span class="text-slate-400">New</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+<span class="text-tertiary-fixed-dim bg-tertiary-container px-2 py-0.5 rounded text-[10px]">Active</span>
+</span>
+</td>
+</tr>
+<tr>
+<td class="py-4 font-bold text-primary">Specter_Dev</td>
+<td class="py-4">Evidence Update</td>
+<td class="py-4 italic font-mono">poc_payload_v2</td>
+<td class="py-4">Oct 24, 2023 - 16:12:33</td>
+<td class="py-4">—</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+</body></html>

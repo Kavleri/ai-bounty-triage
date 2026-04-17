@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Bounty Board - Triage Workflow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#0e1d29",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#545e76",
+                        "secondary": "#47607e",
+                        "on-secondary-container": "#48617e",
+                        "surface-container-highest": "#d5e4f6",
+                        "secondary-fixed": "#d1e4ff",
+                        "primary-fixed-dim": "#bbc6e2",
+                        "on-primary-fixed": "#101b30",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "secondary-container": "#c2dcff",
+                        "primary": "#051125",
+                        "on-primary-container": "#828da7",
+                        "inverse-surface": "#23323f",
+                        "tertiary-container": "#002b30",
+                        "error-container": "#ffdad6",
+                        "surface": "#f7f9ff",
+                        "surface-variant": "#d5e4f6",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3c475d",
+                        "on-surface-variant": "#45474d",
+                        "tertiary-fixed-dim": "#82d3de",
+                        "outline": "#75777d",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#bbc6e2",
+                        "surface-dim": "#ccdced",
+                        "primary-fixed": "#d7e2ff",
+                        "tertiary-fixed": "#9ff0fb",
+                        "surface-container-high": "#daeafc",
+                        "on-tertiary-container": "#4699a3",
+                        "on-tertiary-fixed": "#001f23",
+                        "outline-variant": "#c5c6cd",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "surface-container": "#e2efff",
+                        "on-background": "#0e1d29",
+                        "background": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f56",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "primary-container": "#1b263b",
+                        "tertiary": "#001417",
+                        "surface-container-low": "#ecf4ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- SideNavBar Component -->
+<aside class="hidden md:flex flex-col h-screen p-4 gap-2 bg-slate-100 dark:bg-slate-950 w-64 border-none shrink-0 sticky top-0">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-md">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<div class="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">The Sovereign Ledger</div>
+<div class="text-[10px] text-slate-500 font-medium tracking-tight">Enterprise Tier</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200 font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200 font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-lg">security</span>
+<span>Findings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-md text-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">playlist_add_check</span>
+<span>Triage</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200 font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-lg">history_edu</span>
+<span>Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-200 font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<button class="mt-auto w-full py-3 bg-primary text-white font-bold rounded-md text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
+            Report Vulnerability
+        </button>
+</aside>
+<div class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center w-full px-6 h-16 bg-slate-50 dark:bg-slate-900 sticky top-0 z-10">
+<div class="flex items-center gap-6">
+<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Secure Bounty Board</span>
+<div class="hidden lg:flex items-center bg-slate-200/50 dark:hover:bg-slate-700/50 rounded-lg px-3 py-1.5 gap-2 w-64">
+<span class="material-symbols-outlined text-slate-500 text-sm">search</span>
+<input class="bg-transparent border-none text-xs focus:ring-0 placeholder:text-slate-500 w-full" placeholder="Search findings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex flex-col items-end mr-2">
+<span class="text-xs font-bold text-slate-900 dark:text-white">Organization Alpha</span>
+<span class="text-[10px] text-slate-500">Global Admin</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-200/50 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-200/50 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">apps</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-slate-300">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a professional security analyst with serious expression and neutral lighting in a corporate environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUmmoHvJbf3EyQncAhuMQWtawNzzzV1Y465NoUG2ZGbDO6TaUBv4yBYk2zH5gLRtOltsc3V3PUSTcvxvsbI4ytOsRKO9auwFav0KlYGRsKmcyedUXfwtljoWS3fGFwn-pTDDmOVpGje35S42u4ECbVaHh0fZrDzKiz1h2J9l9aXNBPM5w_Tao-_o-5Outau8Dc0fQizGlCQlhaHySTTDCbLt0S99jp10E39i6ZORst4_HH8pqw3OivV8NDAhQO7Ea4rTLl1_X3lx0"/>
+</div>
+</div>
+</header>
+<!-- Main Triage Content -->
+<main class="p-6 md:p-8 flex flex-col lg:flex-row gap-6">
+<!-- Left Column: Queue List -->
+<div class="flex-1 flex flex-col gap-6">
+<section class="flex flex-col gap-2">
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-primary leading-tight">Triage Workflow</h2>
+<p class="text-on-surface-variant font-medium text-sm mt-1">14 findings awaiting initial verification</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container-high text-on-surface text-xs font-bold rounded hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                                Filter
+                            </button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface text-xs font-bold rounded hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">sort</span>
+                                Sort
+                            </button>
+</div>
+</div>
+</section>
+<!-- Finding Queue Cards -->
+<div class="space-y-4">
+<!-- Finding Item 1: Critical -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border-l-4 border-error flex flex-col sm:flex-row gap-6 items-start">
+<div class="flex-1 space-y-3">
+<div class="flex items-center gap-3">
+<span class="bg-error-container text-on-error-container text-[10px] font-black px-2 py-0.5 rounded tracking-wider">CRITICAL</span>
+<span class="text-xs font-mono text-on-surface-variant">CVE-2024-8832</span>
+<span class="text-xs text-on-surface-variant">• 12m ago</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary tracking-tight">Broken Access Control on User Profile API</h3>
+<p class="text-sm text-on-surface-variant mt-1 leading-relaxed">Direct object reference allows unauthenticated access to sensitive user metadata via the /api/v1/profile endpoint.</p>
+</div>
+<div class="flex items-center gap-4 text-xs font-medium text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">person</span>
+<span>whitehat_alpha</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">account_tree</span>
+<span>Core Banking App</span>
+</div>
+</div>
+</div>
+<div class="flex sm:flex-col gap-2 w-full sm:w-auto shrink-0">
+<button class="flex-1 sm:w-32 py-2.5 bg-primary text-white text-xs font-bold rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+                                Triage
+                            </button>
+<button class="flex-1 sm:w-32 py-2.5 bg-surface-container-highest text-on-surface text-xs font-bold rounded hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">close</span>
+                                Close
+                            </button>
+</div>
+</div>
+<!-- Finding Item 2: High -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border-l-4 border-tertiary-fixed-dim flex flex-col sm:flex-row gap-6 items-start">
+<div class="flex-1 space-y-3">
+<div class="flex items-center gap-3">
+<span class="bg-tertiary-container text-tertiary-fixed text-[10px] font-black px-2 py-0.5 rounded tracking-wider">HIGH</span>
+<span class="text-xs font-mono text-on-surface-variant">BOUNTY-9921</span>
+<span class="text-xs text-on-surface-variant">• 2h ago</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary tracking-tight">Reflected XSS in Search Query Parameters</h3>
+<p class="text-sm text-on-surface-variant mt-1 leading-relaxed">The 'q' parameter in the main search bar is not properly sanitized, allowing script execution in the context of the user's browser.</p>
+</div>
+<div class="flex items-center gap-4 text-xs font-medium text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">person</span>
+<span>bug_hunter_pro</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">account_tree</span>
+<span>Public Website</span>
+</div>
+</div>
+</div>
+<div class="flex sm:flex-col gap-2 w-full sm:w-auto shrink-0">
+<button class="flex-1 sm:w-32 py-2.5 bg-primary text-white text-xs font-bold rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+                                Triage
+                            </button>
+<button class="flex-1 sm:w-32 py-2.5 bg-surface-container-highest text-on-surface text-xs font-bold rounded hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">close</span>
+                                Close
+                            </button>
+</div>
+</div>
+<!-- Finding Item 3: Medium -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border-l-4 border-secondary-container flex flex-col sm:flex-row gap-6 items-start">
+<div class="flex-1 space-y-3">
+<div class="flex items-center gap-3">
+<span class="bg-secondary-fixed text-on-secondary-fixed text-[10px] font-black px-2 py-0.5 rounded tracking-wider">MEDIUM</span>
+<span class="text-xs font-mono text-on-surface-variant">BOUNTY-1044</span>
+<span class="text-xs text-on-surface-variant">• 5h ago</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary tracking-tight">Information Disclosure in Response Headers</h3>
+<p class="text-sm text-on-surface-variant mt-1 leading-relaxed">X-Powered-By header reveals the exact version of the application server (Express 4.17.1).</p>
+</div>
+<div class="flex items-center gap-4 text-xs font-medium text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">person</span>
+<span>cyber_scout</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">account_tree</span>
+<span>Auth Microservice</span>
+</div>
+</div>
+</div>
+<div class="flex sm:flex-col gap-2 w-full sm:w-auto shrink-0">
+<button class="flex-1 sm:w-32 py-2.5 bg-primary text-white text-xs font-bold rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+                                Triage
+                            </button>
+<button class="flex-1 sm:w-32 py-2.5 bg-surface-container-highest text-on-surface text-xs font-bold rounded hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">close</span>
+                                Close
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Quick Stats & Insights -->
+<aside class="w-full lg:w-96 flex flex-col gap-6">
+<!-- Threat Matrix Card -->
+<div class="bg-primary text-white p-6 rounded-xl relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="text-xs font-black uppercase tracking-widest opacity-70 mb-4">Threat Matrix</h4>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/10 p-4 rounded-lg">
+<div class="text-3xl font-black">9</div>
+<div class="text-[10px] uppercase font-bold opacity-70">Critical Pending</div>
+</div>
+<div class="bg-white/10 p-4 rounded-lg">
+<div class="text-3xl font-black">2.4h</div>
+<div class="text-[10px] uppercase font-bold opacity-70">Avg Triage Time</div>
+</div>
+<div class="col-span-2 bg-white/10 p-4 rounded-lg">
+<div class="text-xl font-bold">$12,450</div>
+<div class="text-[10px] uppercase font-bold opacity-70">Projected Payouts (Queue)</div>
+</div>
+</div>
+</div>
+<!-- Decorative Gradient -->
+<div class="absolute -bottom-20 -right-20 w-64 h-64 bg-tertiary rounded-full opacity-30 blur-3xl"></div>
+</div>
+<!-- Source Leaderboard / Stats -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h4 class="text-sm font-bold text-primary mb-4 flex items-center justify-between">
+                        Top Reporters
+                        <span class="text-[10px] font-medium text-on-surface-variant">Current Week</span>
+</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center">
+<span class="text-xs font-bold">WA</span>
+</div>
+<div class="text-xs font-bold">whitehat_alpha</div>
+</div>
+<div class="text-xs font-mono font-bold">42 pts</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center">
+<span class="text-xs font-bold">BH</span>
+</div>
+<div class="text-xs font-bold">bug_hunter_pro</div>
+</div>
+<div class="text-xs font-mono font-bold">38 pts</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center">
+<span class="text-xs font-bold">CS</span>
+</div>
+<div class="text-xs font-bold">cyber_scout</div>
+</div>
+<div class="text-xs font-mono font-bold">29 pts</div>
+</div>
+</div>
+</div>
+<!-- Quick Tips for Analysts -->
+<div class="bg-surface-container-low rounded-xl p-6 border-l-4 border-primary">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-lg">info</span>
+<h4 class="text-sm font-bold text-primary">Analyst Tip</h4>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                        Findings tagged with <b>Core Banking App</b> have high severity weight. Always verify the proof-of-concept in the staging environment before assigning to engineering.
+                    </p>
+</div>
+</aside>
+</main>
+</div>
+<!-- Mobile Bottom Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white flex items-center justify-around z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+<button class="flex flex-col items-center justify-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">security</span>
+<span class="text-[10px] font-medium">Findings</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 text-primary">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">playlist_add_check</span>
+<span class="text-[10px] font-bold">Triage</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</nav>
+</body></html>

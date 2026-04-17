@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Bounty Board - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#0e1d29",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#545e76",
+                        "secondary": "#47607e",
+                        "on-secondary-container": "#48617e",
+                        "surface-container-highest": "#d5e4f6",
+                        "secondary-fixed": "#d1e4ff",
+                        "primary-fixed-dim": "#bbc6e2",
+                        "on-primary-fixed": "#101b30",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "secondary-container": "#c2dcff",
+                        "primary": "#051125",
+                        "on-primary-container": "#828da7",
+                        "inverse-surface": "#23323f",
+                        "tertiary-container": "#002b30",
+                        "error-container": "#ffdad6",
+                        "surface": "#f7f9ff",
+                        "surface-variant": "#d5e4f6",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3c475d",
+                        "on-surface-variant": "#45474d",
+                        "tertiary-fixed-dim": "#82d3de",
+                        "outline": "#75777d",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#bbc6e2",
+                        "surface-dim": "#ccdced",
+                        "primary-fixed": "#d7e2ff",
+                        "tertiary-fixed": "#9ff0fb",
+                        "surface-container-high": "#daeafc",
+                        "on-tertiary-container": "#4699a3",
+                        "on-tertiary-fixed": "#001f23",
+                        "outline-variant": "#c5c6cd",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "surface-container": "#e2efff",
+                        "on-background": "#0e1d29",
+                        "background": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f56",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "primary-container": "#1b263b",
+                        "tertiary": "#001417",
+                        "surface-container-low": "#ecf4ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 32px 64px -12px rgba(14, 29, 41, 0.06);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex items-center justify-center p-0 md:p-6 lg:p-12 overflow-x-hidden">
+<!-- Auth Container -->
+<main class="w-full max-w-[1440px] min-h-[800px] flex flex-col md:flex-row bg-surface-container-lowest overflow-hidden editorial-shadow rounded-xl">
+<!-- Left Side: Brand Imagery & Messaging -->
+<section class="relative w-full md:w-1/2 lg:w-3/5 bg-primary overflow-hidden flex flex-col justify-between p-8 lg:p-16">
+<!-- Background Image with Tonal Overlay -->
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-40 mix-blend-luminosity" data-alt="abstract dark-blue cybersecurity background featuring glowing network nodes and high-tech digital circuitry patterns with sophisticated atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9QLaYs4RpekQhyXjWOUBcIowt6WEcKzWht2uD68K3Xqo0ZklOSoFn_0PyH_mYMl4BWwDWa6e7NnprTaAjJ9OtaJKlK4un3-Wy3bf1-1JIjDekkPKiAdbQp_Q7ME7knSt6u5GIot-x2CrdgGV5VvT1zLK8r0DcmGAQ4SC7TUhGB1YlcQ1jeS4OxhRkr9WniGhu8xQOYAMMaeu5Dk9QA6RhOKYLp7lTXDUYYuFPlGP788anjVLaWSiZv9za2U80TqPqATuPwgwEyZc"/>
+<div class="absolute inset-0 bg-gradient-to-br from-primary via-primary-container to-primary opacity-90"></div>
+</div>
+<!-- Content -->
+<div class="relative z-10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary-fixed text-4xl" data-icon="shield_with_heart" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+<h1 class="font-headline font-extrabold text-2xl tracking-tight text-white">Secure Bounty Board</h1>
+</div>
+</div>
+<div class="relative z-10 mt-auto">
+<h2 class="font-headline font-extrabold text-5xl lg:text-7xl text-white leading-tight tracking-tighter mb-6 max-w-xl">
+                    The Sovereign Ledger
+                </h2>
+<p class="font-body text-primary-fixed-dim text-lg lg:text-xl max-w-md leading-relaxed">
+                    A prestigious record of truth for the modern security architect. Manage vulnerabilities with surgical precision and quiet authority.
+                </p>
+<!-- Indicators / Metadata for Editorial Feel -->
+<div class="flex gap-8 mt-12 border-t border-white/10 pt-8">
+<div class="flex flex-col">
+<span class="font-label text-xs uppercase tracking-widest text-primary-fixed-dim/60 mb-1">Status</span>
+<span class="font-headline font-bold text-tertiary-fixed flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span>
+                            ACTIVE SYSTEMS
+                        </span>
+</div>
+<div class="flex flex-col">
+<span class="font-label text-xs uppercase tracking-widest text-primary-fixed-dim/60 mb-1">Tier</span>
+<span class="font-headline font-bold text-white uppercase">Enterprise Ledger</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Login Form -->
+<section class="w-full md:w-1/2 lg:w-2/5 bg-surface-container-lowest flex flex-col justify-center items-center px-8 py-16 lg:px-20 relative">
+<div class="w-full max-w-sm">
+<!-- Header -->
+<div class="mb-12">
+<h3 class="font-headline font-extrabold text-3xl text-on-surface tracking-tight mb-2">Access Portal</h3>
+<p class="font-body text-on-surface-variant text-sm">Secure authorization required to view the sovereign ledger.</p>
+</div>
+<!-- Form -->
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="font-label font-medium text-xs uppercase tracking-wider text-on-surface-variant" for="email">Security Identifier</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-0 px-4 py-4 text-on-surface font-body text-sm rounded focus:ring-0 focus:bg-surface-container-highest transition-all duration-200 border-b-2 border-transparent focus:border-primary placeholder:text-outline/50" id="email" name="email" placeholder="name@organization.com" required="" type="email"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-xl" data-icon="alternate_email">alternate_email</span>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="font-label font-medium text-xs uppercase tracking-wider text-on-surface-variant" for="password">Passphrase</label>
+<a class="font-label text-xs font-semibold text-primary hover:underline transition-all" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-0 px-4 py-4 text-on-surface font-body text-sm rounded focus:ring-0 focus:bg-surface-container-highest transition-all duration-200 border-b-2 border-transparent focus:border-primary placeholder:text-outline/50" id="password" name="password" placeholder="••••••••••••" required="" type="password"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-xl cursor-pointer" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="flex items-center">
+<div class="flex items-center h-5">
+<input class="w-4 h-4 text-primary bg-surface-container-low border-0 rounded-sm focus:ring-primary/20" id="remember" name="remember" type="checkbox"/>
+</div>
+<label class="ml-2 font-label text-xs font-medium text-on-surface-variant" for="remember">Maintain active session</label>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline font-bold text-sm tracking-wide py-4 px-6 rounded-md hover:opacity-90 active:scale-[0.98] transition-all flex justify-center items-center gap-2 group" type="submit">
+<span>Initialize Session</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Footer Links -->
+<div class="mt-12 text-center">
+<p class="font-body text-sm text-on-surface-variant">
+                        Unauthorized to access? 
+                        <a class="font-semibold text-primary hover:underline ml-1" href="#">Request Credentials</a>
+</p>
+</div>
+</div>
+<!-- Minimal Global Support Link -->
+<div class="absolute bottom-8 text-center w-full left-0 px-8">
+<div class="flex justify-center gap-6 text-[10px] font-label font-medium uppercase tracking-[0.2em] text-outline/40">
+<a class="hover:text-on-surface-variant transition-colors" href="#">Documentation</a>
+<a class="hover:text-on-surface-variant transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-on-surface-variant transition-colors" href="#">Incident Response</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Decorative Elements for Surface Depth -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 bg-surface">
+<div class="absolute top-[10%] left-[5%] w-96 h-96 bg-primary-container/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[10%] right-[5%] w-96 h-96 bg-tertiary-container/5 rounded-full blur-[120px]"></div>
+</div>
+</body></html>
