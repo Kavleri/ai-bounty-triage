@@ -3,9 +3,11 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"secure-bounty-board/backend/internal/store"
@@ -15,6 +17,7 @@ type Server struct {
 	store      *store.PostgresStore
 	corsOrigin string
 	jwtSecret  string
+	loginLimit *loginRateLimiter
 }
 
 type authResponse struct {
@@ -23,19 +26,35 @@ type authResponse struct {
 }
 
 func NewServer(st *store.PostgresStore, corsOrigin, jwtSecret string) http.Handler {
-	s := &Server{store: st, corsOrigin: corsOrigin, jwtSecret: jwtSecret}
+	s := &Server{
+		store:      st,
+		corsOrigin: corsOrigin,
+		jwtSecret:  jwtSecret,
+		loginLimit: newLoginRateLimiter(10, time.Minute),
+	}
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", s.health)
 	mux.HandleFunc("POST /api/v1/auth/register", s.register)
-	mux.HandleFunc("POST /api/v1/auth/login", s.login)
+	mux.Handle("POST /api/v1/auth/login", s.withLoginRateLimit(http.HandlerFunc(s.login)))
 	mux.Handle("GET /api/v1/auth/me", s.authMiddleware(http.HandlerFunc(s.me)))
 	mux.Handle("GET /api/v1/findings", s.authMiddleware(s.requireRoles(http.HandlerFunc(s.listFindings), "researcher", "triager", "admin")))
 	mux.Handle("POST /api/v1/findings", s.authMiddleware(s.requireRoles(http.HandlerFunc(s.createFinding), "researcher", "admin")))
 	mux.Handle("POST /api/v1/findings/{id}/triage", s.authMiddleware(s.requireRoles(http.HandlerFunc(s.triageFinding), "triager", "admin")))
 	mux.Handle("GET /api/v1/audit-logs", s.authMiddleware(s.requireRoles(http.HandlerFunc(s.listAuditLogs), "admin")))
 
-	return s.withCORS(mux)
+	return s.withSecurityHeaders(s.withCORS(mux))
+}
+
+func (s *Server) withSecurityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Referrer-Policy", "no-referrer")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; base-uri 'self'")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (s *Server) withCORS(next http.Handler) http.Handler {
@@ -68,20 +87,20 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid json body"})
+		writeAPIError(w, http.StatusBadRequest, "invalid_json", "invalid json body")
 		return
 	}
 
 	in.Username = strings.TrimSpace(in.Username)
 	in.Email = strings.ToLower(strings.TrimSpace(in.Email))
 	if len(in.Password) < 8 || in.Username == "" || in.Email == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "username, email, and password are required"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "username, email, and password are required")
 		return
 	}
 
 	passwordHash, err := hashPassword(in.Password)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to process password"})
+		writeAPIError(w, http.StatusInternalServerError, "password_hash_failed", "failed to process password")
 		return
 	}
 
@@ -93,16 +112,16 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
-			writeJSON(w, http.StatusConflict, map[string]string{"error": "user already exists"})
+			writeAPIError(w, http.StatusConflict, "user_exists", "user already exists")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create user"})
+		writeAPIError(w, http.StatusInternalServerError, "user_create_failed", "failed to create user")
 		return
 	}
 
 	token, err := issueToken(user, s.jwtSecret, 24*time.Hour)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create token"})
+		writeAPIError(w, http.StatusInternalServerError, "token_issue_failed", "failed to create token")
 		return
 	}
 
@@ -117,24 +136,24 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid json body"})
+		writeAPIError(w, http.StatusBadRequest, "invalid_json", "invalid json body")
 		return
 	}
 
 	in.Email = strings.ToLower(strings.TrimSpace(in.Email))
 	if in.Email == "" || in.Password == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "email and password are required"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "email and password are required")
 		return
 	}
 
 	user, err := s.store.GetUserByEmail(r.Context(), in.Email)
 	if err != nil {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
+		writeAPIError(w, http.StatusUnauthorized, "invalid_credentials", "invalid credentials")
 		return
 	}
 
 	if err := comparePassword(user.PasswordHash, in.Password); err != nil {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
+		writeAPIError(w, http.StatusUnauthorized, "invalid_credentials", "invalid credentials")
 		return
 	}
 
@@ -144,7 +163,7 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := issueToken(user, s.jwtSecret, 24*time.Hour)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create token"})
+		writeAPIError(w, http.StatusInternalServerError, "token_issue_failed", "failed to create token")
 		return
 	}
 
@@ -154,13 +173,13 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 func (s *Server) me(w http.ResponseWriter, r *http.Request) {
 	user, ok := currentUserFromContext(r.Context())
 	if !ok {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		writeAPIError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		return
 	}
 
 	current, err := s.store.GetUserByID(r.Context(), user.ID)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to load user"})
+		writeAPIError(w, http.StatusInternalServerError, "user_load_failed", "failed to load user")
 		return
 	}
 
@@ -170,7 +189,7 @@ func (s *Server) me(w http.ResponseWriter, r *http.Request) {
 func (s *Server) listFindings(w http.ResponseWriter, r *http.Request) {
 	items, err := s.store.ListFindings(r.Context())
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to list findings"})
+		writeAPIError(w, http.StatusInternalServerError, "findings_list_failed", "failed to list findings")
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"items": items})
@@ -187,13 +206,13 @@ type createFindingInput struct {
 func (s *Server) createFinding(w http.ResponseWriter, r *http.Request) {
 	actor, ok := currentUserFromContext(r.Context())
 	if !ok {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		writeAPIError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		return
 	}
 
 	var in createFindingInput
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid json body"})
+		writeAPIError(w, http.StatusBadRequest, "invalid_json", "invalid json body")
 		return
 	}
 
@@ -202,17 +221,17 @@ func (s *Server) createFinding(w http.ResponseWriter, r *http.Request) {
 	in.Severity = strings.ToLower(strings.TrimSpace(in.Severity))
 
 	if in.Title == "" || in.Description == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "title and description are required"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "title and description are required")
 		return
 	}
 	if in.CVSSScore < 0 || in.CVSSScore > 10 {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "cvss_score must be between 0 and 10"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "cvss_score must be between 0 and 10")
 		return
 	}
 
 	allowed := map[string]bool{"low": true, "medium": true, "high": true, "critical": true}
 	if !allowed[in.Severity] {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid severity"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "invalid severity")
 		return
 	}
 
@@ -229,7 +248,7 @@ func (s *Server) createFinding(w http.ResponseWriter, r *http.Request) {
 		AIConfidence:     triage.Confidence,
 	})
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create finding"})
+		writeAPIError(w, http.StatusInternalServerError, "finding_create_failed", "failed to create finding")
 		return
 	}
 
@@ -251,19 +270,19 @@ type triageInput struct {
 func (s *Server) triageFinding(w http.ResponseWriter, r *http.Request) {
 	actor, ok := currentUserFromContext(r.Context())
 	if !ok {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		writeAPIError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 		return
 	}
 
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil || id <= 0 {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid finding id"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "invalid finding id")
 		return
 	}
 
 	var in triageInput
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil && !errors.Is(err, http.ErrBodyNotAllowed) {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid json body"})
+		writeAPIError(w, http.StatusBadRequest, "invalid_json", "invalid json body")
 		return
 	}
 
@@ -273,7 +292,7 @@ func (s *Server) triageFinding(w http.ResponseWriter, r *http.Request) {
 	}
 	allowed := map[string]bool{"triaged": true, "resolved": true, "closed": true}
 	if !allowed[status] {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid triage status"})
+		writeAPIError(w, http.StatusBadRequest, "validation_error", "invalid triage status")
 		return
 	}
 
@@ -283,7 +302,7 @@ func (s *Server) triageFinding(w http.ResponseWriter, r *http.Request) {
 		ReviewedByUserID: &actor.ID,
 	})
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update finding"})
+		writeAPIError(w, http.StatusInternalServerError, "finding_update_failed", "failed to update finding")
 		return
 	}
 
@@ -298,10 +317,103 @@ func (s *Server) triageFinding(w http.ResponseWriter, r *http.Request) {
 func (s *Server) listAuditLogs(w http.ResponseWriter, r *http.Request) {
 	items, err := s.store.ListAuditLogs(r.Context(), 100)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to list audit logs"})
+		writeAPIError(w, http.StatusInternalServerError, "audit_logs_list_failed", "failed to list audit logs")
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"items": items})
+}
+
+type apiError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Details any    `json:"details,omitempty"`
+}
+
+type apiErrorResponse struct {
+	Error apiError `json:"error"`
+}
+
+func writeAPIError(w http.ResponseWriter, status int, code, message string, details ...any) {
+	resp := apiErrorResponse{
+		Error: apiError{Code: code, Message: message},
+	}
+	if len(details) > 0 {
+		resp.Error.Details = details[0]
+	}
+	writeJSON(w, status, resp)
+}
+
+type loginRateLimiter struct {
+	mu      sync.Mutex
+	limit   int
+	window  time.Duration
+	entries map[string]loginRateEntry
+}
+
+type loginRateEntry struct {
+	count   int
+	resetAt time.Time
+}
+
+func newLoginRateLimiter(limit int, window time.Duration) *loginRateLimiter {
+	return &loginRateLimiter{
+		limit:   limit,
+		window:  window,
+		entries: make(map[string]loginRateEntry),
+	}
+}
+
+func (l *loginRateLimiter) allow(key string, now time.Time) (bool, int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	entry, ok := l.entries[key]
+	if !ok || now.After(entry.resetAt) {
+		l.entries[key] = loginRateEntry{count: 1, resetAt: now.Add(l.window)}
+		return true, 0
+	}
+
+	if entry.count >= l.limit {
+		retryAfter := int(time.Until(entry.resetAt).Seconds())
+		if retryAfter < 1 {
+			retryAfter = 1
+		}
+		return false, retryAfter
+	}
+
+	entry.count++
+	l.entries[key] = entry
+	return true, 0
+}
+
+func (s *Server) withLoginRateLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		client := requestClientIP(r)
+		allowed, retryAfter := s.loginLimit.allow(client, time.Now())
+		if !allowed {
+			w.Header().Set("Retry-After", strconv.Itoa(retryAfter))
+			writeAPIError(w, http.StatusTooManyRequests, "rate_limited", "too many login attempts, try again later", map[string]any{"retry_after_seconds": retryAfter})
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func requestClientIP(r *http.Request) string {
+	if forwarded := strings.TrimSpace(r.Header.Get("X-Forwarded-For")); forwarded != "" {
+		parts := strings.Split(forwarded, ",")
+		if len(parts) > 0 {
+			return strings.TrimSpace(parts[0])
+		}
+	}
+	host, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
+	if err == nil && host != "" {
+		return host
+	}
+	if strings.TrimSpace(r.RemoteAddr) == "" {
+		return "unknown"
+	}
+	return strings.TrimSpace(r.RemoteAddr)
 }
 
 func writeJSON(w http.ResponseWriter, status int, payload any) {

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"secure-bounty-board/backend/internal/api"
@@ -17,7 +18,10 @@ func main() {
 	databaseURL := getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:55432/secure_bounty?sslmode=disable")
 	port := getEnv("PORT", "8080")
 	corsOrigin := getEnv("CORS_ORIGIN", "http://localhost:5173")
-	jwtSecret := getEnv("JWT_SECRET", "dev-secret-change-me")
+	jwtSecret := strings.TrimSpace(os.Getenv("JWT_SECRET"))
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET is required and cannot be empty")
+	}
 
 	st, err := store.NewPostgresStore(ctx, databaseURL)
 	if err != nil {

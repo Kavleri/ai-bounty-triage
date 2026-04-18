@@ -28,13 +28,13 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := bearerToken(r.Header.Get("Authorization"))
 		if tokenString == "" {
-			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing bearer token"})
+			writeAPIError(w, http.StatusUnauthorized, "missing_token", "missing bearer token")
 			return
 		}
 
 		user, err := s.userFromToken(r.Context(), tokenString)
 		if err != nil {
-			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired token"})
+			writeAPIError(w, http.StatusUnauthorized, "invalid_token", "invalid or expired token")
 			return
 		}
 
@@ -52,11 +52,11 @@ func (s *Server) requireRoles(next http.Handler, roles ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, ok := currentUserFromContext(r.Context())
 		if !ok {
-			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+			writeAPIError(w, http.StatusUnauthorized, "unauthorized", "unauthorized")
 			return
 		}
 		if _, exists := allowed[user.Role]; !exists {
-			writeJSON(w, http.StatusForbidden, map[string]string{"error": "forbidden"})
+			writeAPIError(w, http.StatusForbidden, "forbidden", "forbidden")
 			return
 		}
 		next.ServeHTTP(w, r)
