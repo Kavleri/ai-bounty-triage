@@ -80,6 +80,11 @@ cd ../frontend && npm install && npm run dev
 
 Active portfolio project with production-minded structure and ongoing improvements to security workflows and platform reliability.
 
+## CI
+
+- GitHub Actions runs backend and frontend build checks on every push and pull request.
+- This helps catch broken changes early before they reach main.
+
 ## License
 
 MIT
