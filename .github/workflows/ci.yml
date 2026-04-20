@@ -8,7 +8,7 @@ on:
 
 jobs:
   backend:
-    name: Backend Build
+    name: Backend Test and Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,6 +26,15 @@ jobs:
 
       - name: Download modules
         run: go mod download
+
+      - name: Run backend tests
+        run: go test ./...
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run Go vulnerability scan
+        run: $(go env GOPATH)/bin/govulncheck ./...
 
       - name: Build backend
         run: go build ./...
@@ -51,5 +60,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit frontend dependencies
+        run: npm audit --audit-level=high
+
       - name: Build frontend
         run: npm run build
+
+  secrets:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

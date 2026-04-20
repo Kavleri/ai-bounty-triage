@@ -84,6 +84,8 @@ Active portfolio project with production-minded structure and ongoing improvemen
 
 - GitHub Actions runs backend and frontend build checks on every push and pull request.
 - This helps catch broken changes early before they reach main.
+- CI also runs lightweight dependency security checks with `govulncheck` (Go) and `npm audit` (frontend).
+- CI also runs backend tests and a secret scan to catch leaked credentials early.
 
 ## License
 
